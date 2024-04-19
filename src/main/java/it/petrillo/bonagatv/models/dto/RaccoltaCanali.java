@@ -16,5 +16,6 @@ public class RaccoltaCanali {
 
     private List<CanaleDto> canaliProssimamenteLive;
     private List<CanaleDto> canaliOffline;
+    private CanaleDto specialEvent;
 
 }

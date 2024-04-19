@@ -20,13 +20,19 @@ public class CanaleController {
 
     @GetMapping("/raccolta")
     public ResponseEntity<RaccoltaCanali> getCanali() {
-        RaccoltaCanali canali = canaleService.getRaccoltaCanaliGratuiti();
+        RaccoltaCanali canali = canaleService.getRaccoltaCanali();
         return ResponseEntity.ok(canali);
     }
 
     @GetMapping("/getInfo/{id}")
     public ResponseEntity<Canale> getInfoCanale(@PathVariable Long id) {
         Canale canale = canaleService.getInfoCanale(id);
+        return ResponseEntity.ok(canale);
+    }
+
+    @GetMapping("/getSpecial")
+    public ResponseEntity<Canale> getSpecialEventChannel() {
+        Canale canale = canaleService.getSpecialEventChannel();
         return ResponseEntity.ok(canale);
     }
 

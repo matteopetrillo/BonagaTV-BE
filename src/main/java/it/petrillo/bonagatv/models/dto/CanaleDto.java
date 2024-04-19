@@ -12,6 +12,7 @@ import lombok.Setter;
 public class CanaleDto {
 
     private Long id;
+    private Long idEvento;
     private String nomeCanale;
     private String nomeEvento;
     private String streamingSrc;

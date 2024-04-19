@@ -1,12 +1,13 @@
 package it.petrillo.bonagatv.models;
 
 import it.petrillo.bonagatv.models.Evento;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -22,8 +23,8 @@ public class UtenteAbbonato {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_evento", nullable = false)
+    @ManyToOne()
+    @JoinColumn(name = "id_evento")
     private Evento idEvento;
 
     @Column(name = "email", length = 500, nullable = false)
@@ -32,8 +33,15 @@ public class UtenteAbbonato {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "data_fine_validita", nullable = false)
-    private Date dataFineValidita;
+    @Column(name = "is_active")
+    private Long isActive;
 
+    @Column(name = "data_fine_validita")
+    private LocalDate dataFineValidita;
+
+
+    public UtenteAbbonato(String email,String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

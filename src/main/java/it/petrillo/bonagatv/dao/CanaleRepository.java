@@ -10,7 +10,7 @@ public interface CanaleRepository extends JpaRepository<Canale, Long> {
     @Query("SELECT c FROM Canale c WHERE c.tipoCanale.id = 1")
     List<Canale> getCanaliGratuiti();
 
-    @Query("SELECT c FROM Canale c WHERE c.tipoCanale.id = 2")
-    List<Canale> getCanaliPagamento();
+    @Query("SELECT c FROM Canale c WHERE c.id = 8")
+    Canale getCanalePagamento();
 
 }

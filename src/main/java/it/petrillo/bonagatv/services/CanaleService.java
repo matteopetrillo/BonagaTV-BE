@@ -1,12 +1,13 @@
 package it.petrillo.bonagatv.services;
 
 import it.petrillo.bonagatv.dao.CanaleRepository;
+import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
 import it.petrillo.bonagatv.models.Canale;
 import it.petrillo.bonagatv.models.Evento;
 import it.petrillo.bonagatv.models.dto.CanaleDto;
 import it.petrillo.bonagatv.models.dto.RaccoltaCanali;
 import it.petrillo.bonagatv.models.mappers.CanaleMapper;
-import jakarta.transaction.Transactional;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,55 +29,54 @@ public class CanaleService {
     @Autowired
     private CanaleRepository canaleRepository;
 
-    @Transactional
-    public RaccoltaCanali getRaccoltaCanaliGratuiti() {
-        log.info("Richieste le raccolte dei canali gratuiti");
+    @Autowired
+    private UtenteService utenteService;
+
+    public RaccoltaCanali getRaccoltaCanali() {
+        log.info("Richieste le raccolte dei canali");
         List<CanaleDto> canaliProxLive = new ArrayList<>();
         List<CanaleDto> canaliOffline = new ArrayList<>();
+        CanaleDto specialEventDto = null;
         try {
+            List<Canale> canaliGratuiti = canaleRepository.getCanaliGratuiti();
+            Canale specialEvent = canaleRepository.getCanalePagamento();
 
-            List<Canale> canali = canaleRepository.getCanaliGratuiti();
-            for (Canale c : canali) {
-
+            for (Canale c : canaliGratuiti) {
                 CanaleDto dto = Mappers.getMapper(CanaleMapper.class).toDto(c);
 
-                if (c.getEventi() == null || c.getEventi().isEmpty()) {
-                    canaliOffline.add(dto);
-                    continue;
-                }
-
-                boolean toAddProxLive = false;
-                String nomeEvento = null;
-                String logoEvento = null;
-
-                for (Evento e : c.getEventi()) {
-                    LocalDate oggi = LocalDate.now();
-                    LocalDate giornoTarget = oggi.plusDays(7);
-
-                    if ((e.getDataInizio().isBefore(giornoTarget) && (e.getDataInizio().isEqual(oggi) || e.getDataInizio().isAfter(oggi))) ||
-                            (e.getDataFine().isAfter(LocalDate.now()) || e.getDataFine().isEqual(LocalDate.now()))) {
-                        toAddProxLive = true;
-                        nomeEvento = e.getNome();
-                        logoEvento = e.getLogoEvento();
-                        break;
-                    }
-                }
-
-                if (toAddProxLive) {
-                    dto.setNomeEvento(nomeEvento);
-                    dto.setLogoEventoSrc(logoEvento);
+                HashMap<String, String> infoNextEvento = getNextEvento(c.getEventi(), 7);
+                if (infoNextEvento.containsKey("nomeEvento") && infoNextEvento.containsKey("logoEvento")
+                        && infoNextEvento.containsKey("idEvento")) {
+                    dto.setNomeEvento(infoNextEvento.get("nomeEvento"));
+                    dto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
+                    dto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
                     canaliProxLive.add(dto);
                 } else {
                     canaliOffline.add(dto);
                 }
             }
 
+
+            HashMap<String, String> infoNextEvento = getNextEvento(specialEvent.getEventi(), 15);
+            if (infoNextEvento.containsKey("nomeEvento") && infoNextEvento.containsKey("logoEvento")
+                    && infoNextEvento.containsKey("idEvento")) {
+                specialEventDto = Mappers.getMapper(CanaleMapper.class).toDto(specialEvent);
+                specialEventDto.setNomeEvento(infoNextEvento.get("nomeEvento"));
+                specialEventDto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
+                specialEventDto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
+                specialEventDto.setStreamingSrc(null);
+            }
+
         } catch (Exception e) {
-            log.error("Errore nel metodo getRaccoltaCanaliGratuiti "+e.getMessage());
+            log.error("Errore nel metodo getRaccoltaCanali "+e.getMessage());
             e.printStackTrace();
         }
-        log.info("Trovati: "+canaliProxLive.size()+" canali prossimamente live e "+canaliOffline.size()+" canali offline");
-        return new RaccoltaCanali(canaliProxLive, canaliOffline);
+
+        log.info("Trovati: "+canaliProxLive.size()+" canali prossimamente live, "+canaliOffline.size()+" canali offline)");
+        if (specialEventDto != null)
+            log.info("Trovato uno special event in arrivo");
+
+        return new RaccoltaCanali(canaliProxLive, canaliOffline, specialEventDto);
     }
 
     public Canale getInfoCanale(Long id) {
@@ -83,5 +84,28 @@ public class CanaleService {
         Optional<Canale> canaleOptional = canaleRepository.findById(id);
         log.info("Le info sono state recuperate: "+canaleOptional.isPresent());
         return canaleOptional.orElse(null);
+    }
+
+    private HashMap<String,String> getNextEvento(List<Evento> eventi, long daysToAdd) {
+        HashMap<String,String> nextEvento = new HashMap<>();
+
+        for (Evento e : eventi) {
+            LocalDate oggi = LocalDate.now();
+            LocalDate giornoTarget = oggi.plusDays(daysToAdd);
+
+            if ((e.getDataInizio().isBefore(giornoTarget) && (e.getDataInizio().isEqual(oggi) || e.getDataInizio().isAfter(oggi))) ||
+                    (e.getDataFine().isAfter(LocalDate.now()) || e.getDataFine().isEqual(LocalDate.now()))) {
+                nextEvento.put("nomeEvento", e.getNome());
+                nextEvento.put("logoEvento", e.getLogoEvento());
+                nextEvento.put("idEvento", String.valueOf(e.getId()));
+                break;
+            }
+        }
+
+        return nextEvento;
+    }
+
+    public Canale getSpecialEventChannel() {
+        return canaleRepository.getCanalePagamento();
     }
 }
