@@ -40,4 +40,7 @@ public class Evento {
     @JoinColumn(name = "ID_CANALE", nullable = false)
     private Canale canale;
 
+    @OneToOne(mappedBy = "evento", orphanRemoval = true)
+    private CostoEvento costoEvento;
+
 }

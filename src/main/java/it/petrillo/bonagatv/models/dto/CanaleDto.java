@@ -17,5 +17,6 @@ public class CanaleDto {
     private String nomeEvento;
     private String streamingSrc;
     private String logoEventoSrc;
+    private Double costo;
 
 }

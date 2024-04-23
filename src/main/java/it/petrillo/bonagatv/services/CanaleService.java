@@ -65,6 +65,7 @@ public class CanaleService {
                 specialEventDto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
                 specialEventDto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
                 specialEventDto.setStreamingSrc(null);
+                specialEventDto.setCosto(Double.valueOf(infoNextEvento.getOrDefault("costo",null)));
             }
 
         } catch (Exception e) {
@@ -98,6 +99,8 @@ public class CanaleService {
                 nextEvento.put("nomeEvento", e.getNome());
                 nextEvento.put("logoEvento", e.getLogoEvento());
                 nextEvento.put("idEvento", String.valueOf(e.getId()));
+                if (e.getCostoEvento() != null)
+                    nextEvento.put("costo", String.valueOf(e.getCostoEvento().getImporto()));
                 break;
             }
         }
