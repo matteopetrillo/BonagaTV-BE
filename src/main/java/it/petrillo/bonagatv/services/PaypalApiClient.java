@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +36,7 @@ public class PaypalApiClient {
     private final String CREATE_ORDER_PATH = "/v2/checkout/orders/";
 
 
-    private String getAccessToken() throws JSONException {
+    private String getAccessToken() throws Exception {
 
         String credentials = CLIENT_ID+":"+CLIENT_SECRET;
 
@@ -56,7 +54,7 @@ public class PaypalApiClient {
 
     }
 
-    public String createOrder(Double importo) throws JSONException {
+    public String createOrder(Double importo) throws Exception {
 
         String token = getAccessToken();
 
@@ -78,7 +76,7 @@ public class PaypalApiClient {
 
     }
 
-    public String completeOrder(String orderId) throws JSONException {
+    public String completeOrder(String orderId) throws Exception {
 
         String token = getAccessToken();
 
