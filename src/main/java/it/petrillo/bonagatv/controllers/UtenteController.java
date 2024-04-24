@@ -12,16 +12,6 @@ public class UtenteController {
     @Autowired
     private UtenteService utenteService;
 
-    @PostMapping("/attiva")
-    public ResponseEntity<Void> attivaUtente(@RequestParam Long id) {
-        utenteService.attivaUtente(id);
-        return ResponseEntity.ok().build();
-    }
 
-    @PostMapping("/disattiva")
-    public ResponseEntity<Void> disattivaUtente(@RequestParam Long id) {
-        utenteService.disattivaUtente(id);
-        return ResponseEntity.ok().build();
-    }
 
 }

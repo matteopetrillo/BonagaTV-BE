@@ -30,7 +30,7 @@ public class AuthService {
             UserDetailsCustom utente = (UserDetailsCustom) authResponse.getPrincipal();
             LoginResponse response = new LoginResponse(utente.getUtente().getId());
             if (authResponse.isAuthenticated()) {
-                log.info("Richiesta di login da: " + loginRequest.getEmail() + " approvata");
+                log.info("Login di: " + loginRequest.getEmail());
                 return response;
             } else {
                 return null;

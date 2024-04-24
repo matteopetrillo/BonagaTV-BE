@@ -33,7 +33,6 @@ public class CanaleService {
     private UtenteService utenteService;
 
     public RaccoltaCanali getRaccoltaCanali() {
-        log.info("Richieste le raccolte dei canali");
         List<CanaleDto> canaliProxLive = new ArrayList<>();
         List<CanaleDto> canaliOffline = new ArrayList<>();
         CanaleDto specialEventDto = null;
@@ -73,9 +72,10 @@ public class CanaleService {
             e.printStackTrace();
         }
 
-        log.info("Trovati: "+canaliProxLive.size()+" canali prossimamente live, "+canaliOffline.size()+" canali offline)");
         if (specialEventDto != null)
-            log.info("Trovato uno special event in arrivo");
+            log.info("getRaccoltaCanali: Trovati: "+canaliProxLive.size()+" canali prossimamente live, "+canaliOffline.size()+" canali offline e uno special event");
+        else
+            log.info("getRaccoltaCanali: Trovati: "+canaliProxLive.size()+" canali prossimamente live, "+canaliOffline.size()+" canali offline");
 
         return new RaccoltaCanali(canaliProxLive, canaliOffline, specialEventDto);
     }

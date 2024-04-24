@@ -23,7 +23,7 @@ public class UtenteAbbonato {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "id_evento")
     private Evento idEvento;
 
@@ -33,14 +33,13 @@ public class UtenteAbbonato {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_active")
-    private Long isActive;
-
     @Column(name = "data_fine_validita")
     private LocalDate dataFineValidita;
 
+    @Column(name = "id_sessione_utente", unique = true)
+    private String sessioneUtente;
 
-    public UtenteAbbonato(String email,String password) {
+    public UtenteAbbonato(String email, String password) {
         this.email = email;
         this.password = password;
     }

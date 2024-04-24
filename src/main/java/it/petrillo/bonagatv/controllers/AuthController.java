@@ -30,7 +30,6 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse response = authService.login(loginRequest);
         if (response != null) {
-            log.info("Richiesta di login da: "+loginRequest.getEmail()+" approvata");
             return ResponseEntity.ok(response);
         }
         else
