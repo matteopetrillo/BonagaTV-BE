@@ -1,6 +1,7 @@
 package it.petrillo.bonagatv.controllers;
 
 import it.petrillo.bonagatv.models.dto.CreateOrderResponse;
+import it.petrillo.bonagatv.models.dto.OrdineDto;
 import it.petrillo.bonagatv.services.OrdineService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class OrdineController {
             CreateOrderResponse response = new CreateOrderResponse(ordineService.creaOrdine(id));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -34,7 +35,17 @@ public class OrdineController {
             String response = ordineService.confermaOrdine(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/registra-ordine")
+    public ResponseEntity<Void> registraOrdine(@RequestBody OrdineDto body) {
+        try {
+            ordineService.registraOrdine(body);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 

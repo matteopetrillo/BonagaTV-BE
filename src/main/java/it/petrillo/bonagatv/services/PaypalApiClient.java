@@ -89,8 +89,9 @@ public class PaypalApiClient {
 
         ResponseEntity<String> response = client.postForEntity(BASE_URL+CREATE_ORDER_PATH+orderId+"/capture",body,String.class);
 
-        if (response.getStatusCodeValue() == 201)
+        if (response.getStatusCodeValue() == 201) {
             return response.getBody();
+        }
         else
             throw new RuntimeException("Non è stato possibile completare l'ordine");
     }

@@ -25,7 +25,7 @@ public class UtenteAbbonato {
 
     @ManyToOne
     @JoinColumn(name = "id_evento")
-    private Evento idEvento;
+    private Evento evento;
 
     @Column(name = "email", length = 500, nullable = false)
     private String email;

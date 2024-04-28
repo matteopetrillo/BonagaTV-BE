@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -32,6 +33,9 @@ public class Ordine {
     private UtenteAbbonato utenteAbbonato;
 
     @Column(name = "data_pagamento")
-    private LocalDate dataPagamento;
+    private LocalDateTime dataPagamento;
+
+    @Column(name = "codice_pagamento")
+    private String codicePagamento;
 
 }

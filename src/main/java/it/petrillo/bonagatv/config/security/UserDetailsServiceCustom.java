@@ -24,7 +24,7 @@ public class UserDetailsServiceCustom implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UtenteAbbonato> utenteAbbonatoOptional = utenteAbbonatoRepository.getValidByEmail(username);
+        Optional<UtenteAbbonato> utenteAbbonatoOptional = utenteAbbonatoRepository.getLoggableByEmail(username);
         if (utenteAbbonatoOptional.isPresent()) {
             return new UserDetailsCustom(utenteAbbonatoOptional.get());
         }

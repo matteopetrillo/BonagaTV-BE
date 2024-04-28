@@ -36,18 +36,16 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
+            UserDetailsService userDetailsService) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(new CustomPasswordEncoder());
         return new ProviderManager(daoAuthenticationProvider);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new CustomPasswordEncoder();
     }
 
     @Bean
