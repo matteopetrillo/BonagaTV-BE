@@ -1,5 +1,6 @@
 package it.petrillo.bonagatv.services;
 
+import it.petrillo.bonagatv.config.security.CustomPasswordEncoder;
 import it.petrillo.bonagatv.dao.EventoRepository;
 import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
 import it.petrillo.bonagatv.models.Evento;
@@ -36,6 +37,9 @@ public class UtenteService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
 
     public Long registraUtente(UserRegistrationDto registrationDetails) {
         try {
@@ -76,6 +80,18 @@ public class UtenteService {
             throw new RuntimeException("Errore in aggiungiUtenteAttivo");
         }
 
+    }
+
+    public void inoltraCredenziali(Long idUtente) {
+        Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.findById(idUtente);
+        if (utenteOp.isPresent()) {
+            UtenteAbbonato utente = utenteOp.get();
+            CustomPasswordEncoder customEncoder = (CustomPasswordEncoder) passwordEncoder;
+            emailService.sendEmail(utente.getEmail(), customEncoder.decode(utente.getPassword()), utente.getEvento().getNome());
+            log.info("Email con le credenziali inviata a "+utente.getEmail());
+        } else {
+            throw new RuntimeException();
+        }
     }
 
     private String eliminaUtenteAttivo(String idSessione) throws RuntimeException {
