@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface UtenteAbbonatoRepository extends JpaRepository<UtenteAbbonato, Long> {
 
-    @Query("SELECT u FROM UtenteAbbonato u WHERE u.email = :email AND u.sessioneUtente IS NULL AND u.dataFineValidita IS NULL")
+    @Query("SELECT u FROM UtenteAbbonato u WHERE u.email = :email AND u.dataFineValidita IS NULL")
     Optional<UtenteAbbonato> getLoggableByEmail(String email);
     @Query("SELECT u FROM UtenteAbbonato u WHERE u.email = :email AND u.dataFineValidita IS NULL")
     Optional<UtenteAbbonato> getUtenteValidByEmail(String email);
