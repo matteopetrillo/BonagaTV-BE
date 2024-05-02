@@ -59,10 +59,12 @@ public class UtenteService {
         }
     }
 
-    public boolean isEmailAvailable(String email) {
+    public Long isEmailAvailable(String email) {
         Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.getUtenteValidByEmail(email);
         log.info("Controllata disponibilita per la mail "+email);
-        return utenteOp.isEmpty();
+        if (utenteOp.isPresent())
+            return utenteOp.get().getId();
+        return 0L;
     }
     public void eliminaUtente(Long id) {
         utenteAbbonatoRepository.deleteById(id);

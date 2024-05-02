@@ -20,7 +20,7 @@ public class UtenteController {
             Long idUtente = utenteService.registraUtente(registrationDetails);
             return ResponseEntity.ok(idUtente);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(0L);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -30,18 +30,19 @@ public class UtenteController {
             utenteService.eliminaUtente(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/check-by-email")
-    public ResponseEntity<Boolean> checkEmailAvailable(@RequestParam String email) {
+    public ResponseEntity<Long> checkEmailAvailable(@RequestParam String email) {
         try {
-            if (utenteService.isEmailAvailable(email))
-                return ResponseEntity.ok(true);
-            return ResponseEntity.ok(false);
+            Long idUtente = utenteService.isEmailAvailable(email);
+            if (idUtente != 0L)
+                return ResponseEntity.ok(idUtente);
+            return ResponseEntity.ok(0L);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -51,7 +52,7 @@ public class UtenteController {
             utenteService.inoltraCredenziali(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
     }
