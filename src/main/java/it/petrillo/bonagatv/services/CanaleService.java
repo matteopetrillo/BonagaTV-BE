@@ -1,7 +1,6 @@
 package it.petrillo.bonagatv.services;
 
 import it.petrillo.bonagatv.dao.CanaleRepository;
-import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
 import it.petrillo.bonagatv.models.Canale;
 import it.petrillo.bonagatv.models.Evento;
 import it.petrillo.bonagatv.models.dto.CanaleDto;
@@ -14,7 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +45,7 @@ public class CanaleService {
             for (Canale c : canaliGratuiti) {
                 CanaleDto dto = Mappers.getMapper(CanaleMapper.class).toDto(c);
 
-                HashMap<String, String> infoNextEvento = getNextEvento(c.getEventi(), 7);
+                HashMap<String, String> infoNextEvento = getWeekEvents(c.getEventi(), ChannelType.GRATUITO);
                 if (infoNextEvento.containsKey("nomeEvento") && infoNextEvento.containsKey("logoEvento")
                         && infoNextEvento.containsKey("idEvento")) {
                     dto.setNomeEvento(infoNextEvento.get("nomeEvento"));
@@ -55,8 +57,7 @@ public class CanaleService {
                 }
             }
 
-
-            HashMap<String, String> infoNextEvento = getNextEvento(specialEvent.getEventi(), 15);
+            HashMap<String, String> infoNextEvento = getWeekEvents(specialEvent.getEventi(), ChannelType.PAGAMENTO);
             if (infoNextEvento.containsKey("nomeEvento") && infoNextEvento.containsKey("logoEvento")
                     && infoNextEvento.containsKey("idEvento")) {
                 specialEventDto = Mappers.getMapper(CanaleMapper.class).toDto(specialEvent);
@@ -87,15 +88,25 @@ public class CanaleService {
         return canaleOptional.orElse(null);
     }
 
-    private HashMap<String,String> getNextEvento(List<Evento> eventi, long daysToAdd) {
+    private HashMap<String,String> getWeekEvents(List<Evento> eventi, ChannelType type) {
         HashMap<String,String> nextEvento = new HashMap<>();
 
-        for (Evento e : eventi) {
-            LocalDate oggi = LocalDate.now();
-            LocalDate giornoTarget = oggi.plusDays(daysToAdd);
+        LocalDate oggi = LocalDate.now();
+        LocalDate beginTarget = null;
+        LocalDate endTarget = null;
 
-            if ((e.getDataInizio().isBefore(giornoTarget) && (e.getDataInizio().isEqual(oggi) || e.getDataInizio().isAfter(oggi))) ||
-                    (e.getDataFine().isAfter(LocalDate.now()) || e.getDataFine().isEqual(LocalDate.now()))) {
+        if (type.equals(ChannelType.GRATUITO)) {
+            beginTarget = oggi.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            endTarget = beginTarget.plusWeeks(1);
+        } else {
+            beginTarget = oggi;
+            endTarget = oggi.plusWeeks(2);
+        }
+
+        for (Evento e : eventi) {
+            if ((e.getDataInizio().isAfter(beginTarget) || e.getDataInizio().isEqual(beginTarget)) &&
+                    (e.getDataFine().isBefore(endTarget)) ||
+                    ((e.getDataInizio().isBefore(beginTarget) && e.getDataFine().isAfter(beginTarget)))) {
                 nextEvento.put("nomeEvento", e.getNome());
                 nextEvento.put("logoEvento", e.getLogoEvento());
                 nextEvento.put("idEvento", String.valueOf(e.getId()));
@@ -107,6 +118,7 @@ public class CanaleService {
 
         return nextEvento;
     }
+
 
     public Canale getSpecialEventChannel() {
         return canaleRepository.getCanalePagamento();
