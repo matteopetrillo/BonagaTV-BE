@@ -84,12 +84,12 @@ public class UtenteService {
 
     }
 
-    public void inoltraCredenziali(Long idUtente) {
+    public void inoltraCredenziali(Long idUtente, String lang) {
         Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.findById(idUtente);
         if (utenteOp.isPresent()) {
             UtenteAbbonato utente = utenteOp.get();
             CustomPasswordEncoder customEncoder = (CustomPasswordEncoder) passwordEncoder;
-            emailService.sendEmail(utente.getEmail(), customEncoder.decode(utente.getPassword()), utente.getEvento().getNome());
+            emailService.sendEmail(utente.getEmail(), customEncoder.decode(utente.getPassword()), utente.getEvento().getNome(), lang);
             log.info("Email con le credenziali inviata a "+utente.getEmail());
         } else {
             throw new RuntimeException();

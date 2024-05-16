@@ -47,9 +47,9 @@ public class UtenteController {
     }
 
     @PostMapping("/send-email")
-    public ResponseEntity<Void> sendCredentials(@RequestParam Long id) {
+    public ResponseEntity<Void> sendCredentials(@RequestParam Long id, @RequestParam String lang) {
         try {
-            utenteService.inoltraCredenziali(id);
+            utenteService.inoltraCredenziali(id, lang);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
