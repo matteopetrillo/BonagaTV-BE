@@ -44,7 +44,6 @@ public class CanaleService {
 
             for (Canale c : canaliGratuiti) {
                 CanaleDto dto = Mappers.getMapper(CanaleMapper.class).toDto(c);
-
                 HashMap<String, String> infoNextEvento = getWeekEvents(c.getEventi(), ChannelType.GRATUITO);
                 if (infoNextEvento.containsKey("nomeEvento") && infoNextEvento.containsKey("logoEvento")
                         && infoNextEvento.containsKey("idEvento")) {

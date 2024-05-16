@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 public interface CanaleMapper {
 
     @Mapping(source = "associazione.abbreviazione", target = "nomeCanale")
+    @Mapping(source = "associazione.nome", target = "descCanale")
+    @Mapping(source = "associazione.logoSrc", target = "logoCanale")
     CanaleDto toDto(Canale canale);
 
 }
