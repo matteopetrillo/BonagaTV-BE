@@ -49,7 +49,6 @@ public class UtenteService {
             eventoOp.ifPresent(nuovoUtente::setEvento);
             String psw = RandomStringUtils.randomAlphanumeric(10);
             nuovoUtente.setPassword(passwordEncoder.encode(psw));
-            System.out.println(psw);
             Long idUtente = utenteAbbonatoRepository.saveAndFlush(nuovoUtente).getId();
             log.info("Inserito con successo l'utente: "+registrationDetails.getEmail()+" e gli è stato assegnato l'id "+idUtente);
             return idUtente;

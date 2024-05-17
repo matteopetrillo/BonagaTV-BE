@@ -72,11 +72,6 @@ public class CanaleService {
             e.printStackTrace();
         }
 
-        if (specialEventDto != null)
-            log.info("getRaccoltaCanali: Trovati: "+canaliProxLive.size()+" canali prossimamente live, "+canaliOffline.size()+" canali offline e uno special event");
-        else
-            log.info("getRaccoltaCanali: Trovati: "+canaliProxLive.size()+" canali prossimamente live, "+canaliOffline.size()+" canali offline");
-
         return new RaccoltaCanali(canaliProxLive, canaliOffline, specialEventDto);
     }
 
