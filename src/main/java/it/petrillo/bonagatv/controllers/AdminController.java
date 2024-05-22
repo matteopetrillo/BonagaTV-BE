@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @RestController
@@ -37,6 +39,16 @@ public class AdminController {
         try {
             service.forceLogout(email);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/massive-add-utente")
+    public ResponseEntity<Void> addMassiveUsersBruteForce(@RequestBody List<LoginRequest> utenti, @RequestParam Long evento) {
+        try {
+            service.addMassiveUsers(utenti, evento);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

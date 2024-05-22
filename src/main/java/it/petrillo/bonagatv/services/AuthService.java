@@ -36,9 +36,12 @@ public class AuthService {
             if (authResponse.isAuthenticated()) {
                 log.info("Login di: " + loginRequest.getEmail());
                 return response;
+            } else {
+                log.warn("Autenticazione negata per "+utente.getUsername()+". Password non corretta.");
+                throw new BadCredentialsException("Auth negata");
             }
         } catch (BadCredentialsException e) {
-            log.error("Errore di Autenticazione. Utente "+loginRequest.getEmail()+" non presente nel DB.");
+            log.warn("Errore di Autenticazione. Utente "+loginRequest.getEmail()+" non presente nel DB.");
             throw new BadCredentialsException("Utente non presente nel DB",e.getCause());
         } catch (InternalAuthenticationServiceException e) {
             log.warn("Errore di Autenticazione. L'utente "+loginRequest.getEmail()+" sta tentando l'accesso da un altro " +
@@ -48,7 +51,5 @@ public class AuthService {
             log.error("Errore imprevisto durante il /login di: "+loginRequest.getEmail(), e.getMessage());
             throw new RuntimeException("Errore imprevisto nel login di "+loginRequest.getEmail(), e.getCause());
         }
-
-        return null;
     }
 }

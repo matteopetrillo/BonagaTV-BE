@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -67,5 +70,20 @@ public class AdminService {
     }
 
 
-
+    @Transactional
+    public void addMassiveUsers(List<LoginRequest> utenti, Long idEvento) {
+        try {
+            List<UtenteAbbonato> utentiDaAggiungere = new ArrayList<>();
+            for (LoginRequest req : utenti) {
+                UtenteAbbonato u = new UtenteAbbonato(req.getEmail().trim(), passwordEncoder.encode(req.getPassword()));
+                u.setEvento(eventoRepository.findById(idEvento).orElseThrow());
+                utentiDaAggiungere.add(u);
+            }
+            utenteAbbonatoRepository.saveAllAndFlush(utentiDaAggiungere);
+            log.info("Aggiunti brute force "+utentiDaAggiungere.size()+" utenti");
+        } catch (Exception e) {
+            log.error("Errore nell'aggiunta massiva di utenti.", e);
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

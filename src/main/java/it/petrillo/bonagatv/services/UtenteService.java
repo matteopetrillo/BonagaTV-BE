@@ -53,7 +53,7 @@ public class UtenteService {
             log.info("Inserito con successo l'utente: "+registrationDetails.getEmail()+" e gli è stato assegnato l'id "+idUtente);
             return idUtente;
         } catch (Exception e) {
-            log.error("Errore nel metodo registraUtente");
+            log.error("Errore nella registrazione dell'utente "+registrationDetails.getEmail());
             throw new RuntimeException();
         }
     }
@@ -88,9 +88,16 @@ public class UtenteService {
         if (utenteOp.isPresent()) {
             UtenteAbbonato utente = utenteOp.get();
             CustomPasswordEncoder customEncoder = (CustomPasswordEncoder) passwordEncoder;
-            emailService.sendEmail(utente.getEmail(), customEncoder.decode(utente.getPassword()), utente.getEvento().getNome(), lang);
-            log.info("Email con le credenziali inviata a "+utente.getEmail());
+            try {
+                emailService.sendEmail(utente.getEmail(), customEncoder.decode(utente.getPassword()), utente.getEvento().getNome(), lang);
+                log.info("Email con le credenziali inviata a "+utente.getEmail());
+            } catch (Exception e) {
+                log.error("Errore nell'invio delle credenziali all'utente "+idUtente+". "+e.getMessage());
+
+            }
+
         } else {
+            log.error("Utente a cui inviare le credenziali non valido.");
             throw new RuntimeException();
         }
     }
@@ -103,22 +110,24 @@ public class UtenteService {
             utenteAbbonatoRepository.saveAndFlush(utente);
             return utente.getEmail();
         } else {
-            log.error("Utente non trovato nel database e non associabile ad una sessione");
-            throw new RuntimeException("Errore in aggiungiUtenteAttivo");
+            log.warn("Utente non trovato nel database e non associabile ad una sessione. IdSessione "+idSessione);
         }
+        return null;
     }
 
     @Transactional
     @EventListener
     public void onConnectEvent(SessionConnectEvent event) {
         SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        Long idUtente = Long.valueOf(Objects.requireNonNull(header.getFirstNativeHeader("idUtente")));
-        String idSessione = header.getSessionId();
+        String idSessione = null;
         try {
-            String emailUtente = aggiungiUtenteAttivo(idUtente,idSessione);
-            log.info("L'utente "+emailUtente+" è connesso al sistema.");
+            Long idUtente = Long.valueOf(Objects.requireNonNull(header.getFirstNativeHeader("idUtente")));
+            idSessione = header.getSessionId();
+            String emailUtente = aggiungiUtenteAttivo(idUtente, idSessione);
+            log.info("L'utente " + emailUtente + " è connesso al sistema con idSessione " + idSessione + ".");
         } catch (Exception e) {
-            log.error("Errore nell'inserimento della sessione "+idSessione);
+            log.error("Errore nella registrazione della sessione utente. Impossibile il collegamento alla sessione "+idSessione +
+                    ". " +"Headers: " + header.toNativeHeaderMap());
         }
     }
 
@@ -126,12 +135,13 @@ public class UtenteService {
     @EventListener
     public void onDisconnectEvent(SessionDisconnectEvent event) {
         SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        String idSessione = header.getSessionId();
+        String idSessione = null;
         try {
+            idSessione = header.getSessionId();
             String emailUtente = eliminaUtenteAttivo(idSessione);
             log.info("L'utente "+emailUtente+" è disconnesso dal sistema.");
         } catch (Exception e) {
-            log.error("Errore nella cancellazione della sessione dal db");
+            log.error("Errore nella cancellazione della sessione dal db per la sessione "+idSessione+". Headers: "+header.toNativeHeaderMap());
         }
 
     }

@@ -1,8 +1,10 @@
 package it.petrillo.bonagatv.services;
 
 import it.petrillo.bonagatv.dao.CanaleRepository;
+import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
 import it.petrillo.bonagatv.models.Canale;
 import it.petrillo.bonagatv.models.Evento;
+import it.petrillo.bonagatv.models.UtenteAbbonato;
 import it.petrillo.bonagatv.models.dto.CanaleDto;
 import it.petrillo.bonagatv.models.dto.RaccoltaCanali;
 import it.petrillo.bonagatv.models.mappers.CanaleMapper;
@@ -33,6 +35,8 @@ public class CanaleService {
 
     @Autowired
     private UtenteService utenteService;
+    @Autowired
+    private UtenteAbbonatoRepository utenteAbbonatoRepository;
 
     public RaccoltaCanali getRaccoltaCanali() {
         List<CanaleDto> canaliProxLive = new ArrayList<>();

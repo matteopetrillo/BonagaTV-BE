@@ -5,6 +5,7 @@ import it.petrillo.bonagatv.exception.AlreadyLoggedException;
 import it.petrillo.bonagatv.models.UtenteAbbonato;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
@@ -33,7 +34,9 @@ public class UserDetailsServiceCustom implements UserDetailsService {
             else
                 throw new AlreadyLoggedException("Utente già loggato");
         }
-        else
+        else {
             throw new UsernameNotFoundException("Utente non trovato");
+        }
+
     }
 }
