@@ -77,7 +77,7 @@ public class UtenteService {
             utenteAbbonatoRepository.saveAndFlush(utente);
             return utente.getEmail();
         } else {
-            log.error("Utente non trovato nel database e non associabile ad una sessione");
+            log.error("Errore in aggiungiUtenteAttivo. Utente non trovato nel database e non associabile ad una sessione");
             throw new RuntimeException("Errore in aggiungiUtenteAttivo");
         }
 
@@ -110,7 +110,7 @@ public class UtenteService {
             utenteAbbonatoRepository.saveAndFlush(utente);
             return utente.getEmail();
         } else {
-            log.warn("Utente non trovato nel database e non associabile ad una sessione. IdSessione "+idSessione);
+            log.warn("Errore in eliminaUtenteAttivo. Utente non trovato nel database e non associabile ad una sessione. IdSessione "+idSessione);
         }
         return null;
     }

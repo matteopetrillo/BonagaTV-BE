@@ -42,6 +42,8 @@ public class CanaleService {
         List<CanaleDto> canaliProxLive = new ArrayList<>();
         List<CanaleDto> canaliOffline = new ArrayList<>();
         CanaleDto specialEventDto = null;
+        CanaleDto freeSpecialEvent = null;
+
         try {
             List<Canale> canaliGratuiti = canaleRepository.getCanaliGratuiti();
             Canale specialEvent = canaleRepository.getCanalePagamento();
@@ -54,7 +56,11 @@ public class CanaleService {
                     dto.setNomeEvento(infoNextEvento.get("nomeEvento"));
                     dto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
                     dto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
-                    canaliProxLive.add(dto);
+                    if (dto.getId() == 12L)
+                        freeSpecialEvent = dto;
+                    else
+                        canaliProxLive.add(dto);
+
                 } else {
                     canaliOffline.add(dto);
                 }
@@ -76,7 +82,7 @@ public class CanaleService {
             e.printStackTrace();
         }
 
-        return new RaccoltaCanali(canaliProxLive, canaliOffline, specialEventDto);
+        return new RaccoltaCanali(canaliProxLive, canaliOffline, specialEventDto, freeSpecialEvent);
     }
 
     public Canale getInfoCanale(Long id) {
