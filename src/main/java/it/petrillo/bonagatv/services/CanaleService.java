@@ -56,7 +56,7 @@ public class CanaleService {
                     dto.setNomeEvento(infoNextEvento.get("nomeEvento"));
                     dto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
                     dto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
-                    if (dto.getId() == 12L)
+                    if (dto.getId() == 12L && !infoNextEvento.isEmpty())
                         freeSpecialEvent = dto;
                     else
                         canaliProxLive.add(dto);
