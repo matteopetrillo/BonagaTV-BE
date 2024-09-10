@@ -56,13 +56,16 @@ public class CanaleService {
                     dto.setNomeEvento(infoNextEvento.get("nomeEvento"));
                     dto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
                     dto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
-                    if (dto.getId() == 12L && !infoNextEvento.isEmpty())
+                    if (dto.getId() == 12L)
                         freeSpecialEvent = dto;
                     else
                         canaliProxLive.add(dto);
 
                 } else {
-                    canaliOffline.add(dto);
+                    if (dto.getId() == 12L)
+                        freeSpecialEvent = null;
+                    else
+                        canaliOffline.add(dto);
                 }
             }
 
