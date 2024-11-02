@@ -107,13 +107,13 @@ public class CanaleService {
             endTarget = beginTarget.plusWeeks(1);
         } else {
             beginTarget = oggi;
-            endTarget = oggi.plusWeeks(2);
+            endTarget = beginTarget.plusWeeks(2);
         }
 
         for (Evento e : eventi) {
             if ((e.getDataInizio().isAfter(beginTarget) || e.getDataInizio().isEqual(beginTarget)) &&
-                    (e.getDataFine().isBefore(endTarget)) ||
-                    ((e.getDataInizio().isBefore(beginTarget) && e.getDataFine().isAfter(beginTarget)))) {
+                    (e.getDataFine().isBefore(endTarget) || e.getDataFine().isEqual(endTarget)) ||
+                    (e.getDataInizio().isBefore(beginTarget) && e.getDataFine().isAfter(beginTarget))) {
                 nextEvento.put("nomeEvento", e.getNome());
                 nextEvento.put("logoEvento", e.getLogoEvento());
                 nextEvento.put("idEvento", String.valueOf(e.getId()));
