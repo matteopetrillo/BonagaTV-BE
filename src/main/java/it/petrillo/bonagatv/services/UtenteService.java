@@ -6,6 +6,7 @@ import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
 import it.petrillo.bonagatv.models.Evento;
 import it.petrillo.bonagatv.models.UtenteAbbonato;
 import it.petrillo.bonagatv.models.dto.UserRegistrationDto;
+import it.petrillo.bonagatv.models.dto.UtenteDto;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 

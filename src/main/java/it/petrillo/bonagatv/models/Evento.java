@@ -1,6 +1,7 @@
 package it.petrillo.bonagatv.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,9 +28,11 @@ public class Evento {
     private String nome;
 
     @Column(name = "DATA_INIZIO")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dataInizio;
 
     @Column(name = "DATA_FINE")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dataFine;
 
     @Column(name = "LOGO_EVENTO_SRC", length = 4000)
