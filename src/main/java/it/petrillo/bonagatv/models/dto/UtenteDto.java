@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class UtenteDto {
 
@@ -19,7 +18,13 @@ public class UtenteDto {
     private String email;
     private String password;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime dataDiRegistrazione;
 
+    public UtenteDto(Long id, String email, String password, LocalDateTime dataDiRegistrazione) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.dataDiRegistrazione = dataDiRegistrazione != null ? dataDiRegistrazione.plusHours(1) : null;
+    }
 }
