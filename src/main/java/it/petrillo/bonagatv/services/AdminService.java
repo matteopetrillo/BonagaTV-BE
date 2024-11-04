@@ -145,7 +145,7 @@ public class AdminService {
         LocalDateTime now = LocalDateTime.now();
         System.out.println("Data di registrazione: " + now); // Log della data
 
-        return new UtenteDto(nuovaUtenza.getEmail(), defaultPsw, now);
+        return new UtenteDto(nuovaUtenza.getId(),nuovaUtenza.getEmail(), defaultPsw, now);
     }
 
     private String generaNuovaMailDalTipo(Long idEvento, UtenzaPromoType tipoUtenza) {

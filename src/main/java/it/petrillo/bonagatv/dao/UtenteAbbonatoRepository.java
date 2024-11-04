@@ -16,7 +16,7 @@ public interface UtenteAbbonatoRepository extends JpaRepository<UtenteAbbonato, 
     Optional<UtenteAbbonato> getUtenteValidByEmail(String email);
     Optional<UtenteAbbonato> findBySessioneUtente(String sessioneUtente);
 
-    @Query("SELECT new it.petrillo.bonagatv.models.dto.UtenteDto(u.email, u.password, o.dataPagamento) FROM UtenteAbbonato u LEFT JOIN Ordine o ON u.id = o.utenteAbbonato.id WHERE u.evento.id = :idEvento AND u.email LIKE %:email%")
+    @Query("SELECT new it.petrillo.bonagatv.models.dto.UtenteDto(u.id,u.email, u.password, o.dataPagamento) FROM UtenteAbbonato u LEFT JOIN Ordine o ON u.id = o.utenteAbbonato.id WHERE u.evento.id = :idEvento AND u.email LIKE %:email%")
     List<UtenteDto> findUsersByEventId(Long idEvento, String email);
 
     @Query("SELECT u.email FROM UtenteAbbonato u WHERE u.evento.id = :idEvento AND u.email LIKE :prefix% ORDER BY u.id DESC")
