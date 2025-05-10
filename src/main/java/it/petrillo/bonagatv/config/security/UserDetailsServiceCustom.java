@@ -1,8 +1,8 @@
 package it.petrillo.bonagatv.config.security;
 
-import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
+import it.petrillo.bonagatv.dao.UtenteLiveRepository;
 import it.petrillo.bonagatv.exception.AlreadyLoggedException;
-import it.petrillo.bonagatv.models.UtenteAbbonato;
+import it.petrillo.bonagatv.models.UtenteLive;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,21 +21,21 @@ import java.util.Optional;
 public class UserDetailsServiceCustom implements UserDetailsService {
 
     @Autowired
-    private UtenteAbbonatoRepository utenteAbbonatoRepository;
+    private UtenteLiveRepository utenteLiveRepository;
 
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UtenteAbbonato> utenteAbbonatoOptional = utenteAbbonatoRepository.getLoggableByEmail(username);
+        Optional<UtenteLive> utenteAbbonatoOptional = utenteLiveRepository.getLoggableByEmail(username);
         if (utenteAbbonatoOptional.isPresent()) {
-            UtenteAbbonato utente = utenteAbbonatoOptional.get();
+            UtenteLive utente = utenteAbbonatoOptional.get();
             if (utente.getSessioneUtente() == null)
                 return new UserDetailsCustom(utenteAbbonatoOptional.get());
             else
-                throw new AlreadyLoggedException("Utente già loggato");
+                throw new AlreadyLoggedException("UtenteVod già loggato");
         }
         else {
-            throw new UsernameNotFoundException("Utente non trovato");
+            throw new UsernameNotFoundException("UtenteVod non trovato");
         }
 
     }

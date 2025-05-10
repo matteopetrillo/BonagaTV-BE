@@ -1,14 +1,12 @@
 package it.petrillo.bonagatv.models;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import it.petrillo.bonagatv.utils.TipoUtente;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -28,9 +26,9 @@ public class Ordine {
     @Column(name = "importo")
     private Double importo;
 
-    @OneToOne(orphanRemoval = true)
+    @ManyToOne
     @JoinColumn(name = "id_utente", nullable = false)
-    private UtenteAbbonato utenteAbbonato;
+    private UtenteBase utente;
 
     @Column(name = "data_pagamento")
     private LocalDateTime dataPagamento;
@@ -38,4 +36,7 @@ public class Ordine {
     @Column(name = "codice_pagamento")
     private String codicePagamento;
 
+    @Column(name = "tipo_utente", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TipoUtente tipoUtente;
 }

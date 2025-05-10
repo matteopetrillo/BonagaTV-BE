@@ -2,8 +2,8 @@ package it.petrillo.bonagatv.services;
 
 import it.petrillo.bonagatv.dao.EventoRepository;
 import it.petrillo.bonagatv.dao.PasswordStandardRepository;
-import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
-import it.petrillo.bonagatv.models.UtenteAbbonato;
+import it.petrillo.bonagatv.dao.UtenteLiveRepository;
+import it.petrillo.bonagatv.models.UtenteLive;
 import it.petrillo.bonagatv.models.dto.LoginRequest;
 import it.petrillo.bonagatv.models.dto.UtenteDto;
 import it.petrillo.bonagatv.models.dto.UtenzeGratuiteDto;
@@ -32,7 +32,7 @@ public class AdminService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private UtenteAbbonatoRepository utenteAbbonatoRepository;
+    private UtenteLiveRepository utenteLiveRepository;
     @Autowired
     private EventoRepository eventoRepository;
     @Autowired
@@ -40,18 +40,18 @@ public class AdminService {
 
     public void addUtenteWithCustomPsw(LoginRequest loginRequest, Long idEvento) {
         try {
-            Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.getUtenteValidByEmail(loginRequest.getEmail());
+            Optional<UtenteLive> utenteOp = utenteLiveRepository.getUtenteValidByEmail(loginRequest.getEmail());
             if (utenteOp.isPresent()) {
                 throw new IllegalArgumentException();
             }
-            UtenteAbbonato utente = new UtenteAbbonato();
+            UtenteLive utente = new UtenteLive();
             utente.setEvento(eventoRepository.findById(idEvento).orElseThrow());
             utente.setEmail(loginRequest.getEmail());
             if (loginRequest.getPassword() != null)
                 utente.setPassword(passwordEncoder.encode(loginRequest.getPassword()));
             else
                 utente.setPassword(passwordStandardRepository.getPasswordStandardByIdEvento(idEvento));
-            utenteAbbonatoRepository.saveAndFlush(utente);
+            utenteLiveRepository.saveAndFlush(utente);
             log.info("Aggiunto l'utente "+loginRequest.getEmail()+" bypassando il pagamento");
 
         } catch (IllegalArgumentException e) {
@@ -64,19 +64,19 @@ public class AdminService {
     }
 
     public void forceLogout(String email) {
-        Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.getUtenteValidByEmail(email);
+        Optional<UtenteLive> utenteOp = utenteLiveRepository.getUtenteValidByEmail(email);
         if (utenteOp.isEmpty()) {
-            log.error("Utente "+email+" non presente nel sistema");
-            throw new UsernameNotFoundException("Utente non presente nel DB");
+            log.error("UtenteVod "+email+" non presente nel sistema");
+            throw new UsernameNotFoundException("UtenteVod non presente nel DB");
         }
 
-        UtenteAbbonato utente = utenteOp.get();
+        UtenteLive utente = utenteOp.get();
         if (utente.getSessioneUtente() != null) {
             log.warn("Tentato il logout brute force di "+email+" ma l'utente non è collegato al sistema");
         }
         utente.setSessioneUtente(null);
         log.info("Forzato il logout per l'utente "+email);
-        utenteAbbonatoRepository.saveAndFlush(utente);
+        utenteLiveRepository.saveAndFlush(utente);
 
     }
 
@@ -84,13 +84,13 @@ public class AdminService {
     @Transactional
     public void addMassiveUsers(List<LoginRequest> utenti, Long idEvento) {
         try {
-            List<UtenteAbbonato> utentiDaAggiungere = new ArrayList<>();
+            List<UtenteLive> utentiDaAggiungere = new ArrayList<>();
             for (LoginRequest req : utenti) {
-                UtenteAbbonato u = new UtenteAbbonato(req.getEmail().trim(), passwordStandardRepository.getPasswordStandardByIdEvento(idEvento));
+                UtenteLive u = new UtenteLive(req.getEmail().trim(), passwordStandardRepository.getPasswordStandardByIdEvento(idEvento));
                 u.setEvento(eventoRepository.findById(idEvento).orElseThrow());
                 utentiDaAggiungere.add(u);
             }
-            utenteAbbonatoRepository.saveAllAndFlush(utentiDaAggiungere);
+            utenteLiveRepository.saveAllAndFlush(utentiDaAggiungere);
             log.info("Aggiunti brute force "+utentiDaAggiungere.size()+" utenti");
         } catch (Exception e) {
             log.error("Errore nell'aggiunta massiva di utenti.", e);
@@ -99,7 +99,7 @@ public class AdminService {
     }
 
     public List<UtenteDto> getUtentiByEventIdAndEmailParziale(Long idEvento, String email) {
-        return utenteAbbonatoRepository.findUsersByEventId(idEvento, email);
+        return utenteLiveRepository.findUsersByEventId(idEvento, email);
     }
 
     public UtenzeGratuiteDto getUtenzeGratuiteByEventId(Long idEvento) {
@@ -132,7 +132,7 @@ public class AdminService {
     }
 
     public UtenteDto addNewPromoUserByType(Long idEvento, UtenzaPromoType tipoUtenza) {
-        UtenteAbbonato nuovaUtenza = new UtenteAbbonato();
+        UtenteLive nuovaUtenza = new UtenteLive();
         Evento eventoAssociato = eventoRepository.findById(idEvento).get();
         String defaultPsw = passwordStandardRepository.getPasswordStandardByIdEvento(idEvento);
 
@@ -140,7 +140,7 @@ public class AdminService {
         nuovaUtenza.setPassword(defaultPsw);
         nuovaUtenza.setEmail(generaNuovaMailDalTipo(idEvento, tipoUtenza));
 
-        utenteAbbonatoRepository.saveAndFlush(nuovaUtenza);
+        utenteLiveRepository.saveAndFlush(nuovaUtenza);
 
         LocalDateTime now = LocalDateTime.now();
         System.out.println("Data di registrazione: " + now); // Log della data
@@ -151,7 +151,7 @@ public class AdminService {
     private String generaNuovaMailDalTipo(Long idEvento, UtenzaPromoType tipoUtenza) {
         String prefix = tipoUtenza.name().toLowerCase();
         int newNumber = 1;
-        Optional<List<String>> lastMails = utenteAbbonatoRepository.getLastUtenzaPromoByIdEventoAndType(idEvento, prefix);
+        Optional<List<String>> lastMails = utenteLiveRepository.getLastUtenzaPromoByIdEventoAndType(idEvento, prefix);
         if (lastMails.isPresent()) {
             List<String> mails = lastMails.get();
             if (!mails.isEmpty()) {

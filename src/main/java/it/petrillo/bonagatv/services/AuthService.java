@@ -41,12 +41,12 @@ public class AuthService {
                 throw new BadCredentialsException("Auth negata");
             }
         } catch (BadCredentialsException e) {
-            log.warn("Errore di Autenticazione. Utente "+loginRequest.getEmail()+" non presente nel DB.");
-            throw new BadCredentialsException("Utente non presente nel DB",e.getCause());
+            log.warn("Errore di Autenticazione. UtenteVod "+loginRequest.getEmail()+" non presente nel DB.");
+            throw new BadCredentialsException("UtenteVod non presente nel DB",e.getCause());
         } catch (InternalAuthenticationServiceException e) {
             log.warn("Errore di Autenticazione. L'utente "+loginRequest.getEmail()+" sta tentando l'accesso da un altro " +
                     "dispositivo.");
-            throw new InternalAuthenticationServiceException("Utente sta tentando l'accesso da un secondo dispositivo", e.getCause());
+            throw new InternalAuthenticationServiceException("UtenteVod sta tentando l'accesso da un secondo dispositivo", e.getCause());
         } catch (Exception e) {
             log.error("Errore imprevisto durante il /login di: "+loginRequest.getEmail(), e.getMessage());
             throw new RuntimeException("Errore imprevisto nel login di "+loginRequest.getEmail(), e.getCause());

@@ -3,10 +3,9 @@ package it.petrillo.bonagatv.services;
 
 import it.petrillo.bonagatv.dao.CostoEventoRepository;
 import it.petrillo.bonagatv.dao.OrdineRepository;
-import it.petrillo.bonagatv.dao.TipoCanaleRepository;
-import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
+import it.petrillo.bonagatv.dao.UtenteLiveRepository;
 import it.petrillo.bonagatv.models.Ordine;
-import it.petrillo.bonagatv.models.UtenteAbbonato;
+import it.petrillo.bonagatv.models.UtenteLive;
 import it.petrillo.bonagatv.models.dto.OrdineDto;
 import it.petrillo.bonagatv.models.mappers.OrdineMapper;
 import lombok.AllArgsConstructor;
@@ -34,7 +33,7 @@ public class OrdineService {
     @Autowired
     private CostoEventoRepository costoEventoRepository;
     @Autowired
-    private UtenteAbbonatoRepository utenteAbbonatoRepository;
+    private UtenteLiveRepository utenteLiveRepository;
 
     public String creaOrdine(Long eventoId) {
 
@@ -77,10 +76,10 @@ public class OrdineService {
         try {
             Ordine nuovoOrdine = Mappers.getMapper(OrdineMapper.class).toEntity(body);
             nuovoOrdine.setDataPagamento(LocalDateTime.now());
-            Optional<UtenteAbbonato> utente = utenteAbbonatoRepository.findById(body.getIdUtente());
-            nuovoOrdine.setUtenteAbbonato(utente.orElseThrow());
+            Optional<UtenteLive> utente = utenteLiveRepository.findById(body.getIdUtente());
+            nuovoOrdine.setUtente(utente.orElseThrow());
             ordineRepository.saveAndFlush(nuovoOrdine);
-            log.info("Registrato l'ordine con codice "+nuovoOrdine.getCodiceOrdine()+" dell'utente "+nuovoOrdine.getUtenteAbbonato().getEmail()
+            log.info("Registrato l'ordine con codice "+nuovoOrdine.getCodiceOrdine()+" dell'utente "+nuovoOrdine.getUtente().getEmail()
             +" per un importo totale di €"+nuovoOrdine.getImporto());
         } catch (Exception e) {
             log.error("Error in registraOrdine");

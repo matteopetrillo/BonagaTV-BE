@@ -1,6 +1,6 @@
 package it.petrillo.bonagatv.config.security;
 
-import it.petrillo.bonagatv.models.UtenteAbbonato;
+import it.petrillo.bonagatv.models.UtenteLive;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,9 +8,9 @@ import java.util.Collection;
 
 public class UserDetailsCustom implements UserDetails {
 
-    private UtenteAbbonato utente;
+    private UtenteLive utente;
 
-    public UserDetailsCustom(UtenteAbbonato utente) {
+    public UserDetailsCustom(UtenteLive utente) {
         this.utente = utente;
     }
 
@@ -50,7 +50,7 @@ public class UserDetailsCustom implements UserDetails {
         return true;
     }
 
-    public UtenteAbbonato getUtente() {
+    public UtenteLive getUtente() {
         return utente;
     }
 }

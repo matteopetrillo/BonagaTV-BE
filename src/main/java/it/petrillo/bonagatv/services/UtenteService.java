@@ -2,11 +2,10 @@ package it.petrillo.bonagatv.services;
 
 import it.petrillo.bonagatv.config.security.CustomPasswordEncoder;
 import it.petrillo.bonagatv.dao.EventoRepository;
-import it.petrillo.bonagatv.dao.UtenteAbbonatoRepository;
+import it.petrillo.bonagatv.dao.UtenteLiveRepository;
 import it.petrillo.bonagatv.models.Evento;
-import it.petrillo.bonagatv.models.UtenteAbbonato;
+import it.petrillo.bonagatv.models.UtenteLive;
 import it.petrillo.bonagatv.models.dto.UserRegistrationDto;
-import it.petrillo.bonagatv.models.dto.UtenteDto;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,7 +32,7 @@ public class UtenteService {
     private EventoRepository eventoRepository;
 
     @Autowired
-    private UtenteAbbonatoRepository utenteAbbonatoRepository;
+    private UtenteLiveRepository utenteLiveRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -45,13 +42,13 @@ public class UtenteService {
 
     public Long registraUtente(UserRegistrationDto registrationDetails) {
         try {
-            UtenteAbbonato nuovoUtente = new UtenteAbbonato();
+            UtenteLive nuovoUtente = new UtenteLive();
             nuovoUtente.setEmail(registrationDetails.getEmail());
             Optional<Evento> eventoOp = eventoRepository.findById(registrationDetails.getIdEvento());
             eventoOp.ifPresent(nuovoUtente::setEvento);
             String psw = RandomStringUtils.randomNumeric(7);
             nuovoUtente.setPassword(passwordEncoder.encode(psw));
-            Long idUtente = utenteAbbonatoRepository.saveAndFlush(nuovoUtente).getId();
+            Long idUtente = utenteLiveRepository.saveAndFlush(nuovoUtente).getId();
             log.info("Inserito con successo l'utente: "+registrationDetails.getEmail()+" e gli è stato assegnato l'id "+idUtente);
             return idUtente;
         } catch (Exception e) {
@@ -61,34 +58,34 @@ public class UtenteService {
     }
 
     public Long isEmailAvailable(String email) {
-        Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.getUtenteValidByEmail(email);
+        Optional<UtenteLive> utenteOp = utenteLiveRepository.getUtenteValidByEmail(email);
         log.info("Controllata disponibilita per la mail "+email);
         if (utenteOp.isPresent())
             return utenteOp.get().getId();
         return 0L;
     }
     public void eliminaUtente(Long id) {
-        utenteAbbonatoRepository.deleteById(id);
+        utenteLiveRepository.deleteById(id);
     }
 
     private String aggiungiUtenteAttivo(Long idUtente, String idSessione) throws RuntimeException {
-        Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.findById(idUtente);
+        Optional<UtenteLive> utenteOp = utenteLiveRepository.findById(idUtente);
         if (utenteOp.isPresent()) {
-            UtenteAbbonato utente = utenteOp.get();
+            UtenteLive utente = utenteOp.get();
             utente.setSessioneUtente(idSessione);
-            utenteAbbonatoRepository.saveAndFlush(utente);
+            utenteLiveRepository.saveAndFlush(utente);
             return utente.getEmail();
         } else {
-            log.error("Errore in aggiungiUtenteAttivo. Utente non trovato nel database e non associabile ad una sessione");
+            log.error("Errore in aggiungiUtenteAttivo. UtenteVod non trovato nel database e non associabile ad una sessione");
             throw new RuntimeException("Errore in aggiungiUtenteAttivo");
         }
 
     }
 
     public void inoltraCredenziali(Long idUtente, String lang) {
-        Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.findById(idUtente);
+        Optional<UtenteLive> utenteOp = utenteLiveRepository.findById(idUtente);
         if (utenteOp.isPresent()) {
-            UtenteAbbonato utente = utenteOp.get();
+            UtenteLive utente = utenteOp.get();
             CustomPasswordEncoder customEncoder = (CustomPasswordEncoder) passwordEncoder;
             try {
                 emailService.sendEmail(utente.getEmail(), customEncoder.decode(utente.getPassword()), utente.getEvento().getNome(), lang);
@@ -99,20 +96,20 @@ public class UtenteService {
             }
 
         } else {
-            log.error("Utente a cui inviare le credenziali non valido.");
+            log.error("UtenteVod a cui inviare le credenziali non valido.");
             throw new RuntimeException();
         }
     }
 
     private String eliminaUtenteAttivo(String idSessione) throws RuntimeException {
-        Optional<UtenteAbbonato> utenteOp = utenteAbbonatoRepository.findBySessioneUtente(idSessione);
+        Optional<UtenteLive> utenteOp = utenteLiveRepository.findBySessioneUtente(idSessione);
         if (utenteOp.isPresent()) {
-            UtenteAbbonato utente = utenteOp.get();
+            UtenteLive utente = utenteOp.get();
             utente.setSessioneUtente(null);
-            utenteAbbonatoRepository.saveAndFlush(utente);
+            utenteLiveRepository.saveAndFlush(utente);
             return utente.getEmail();
         } else {
-            log.warn("Errore in eliminaUtenteAttivo. Utente non trovato nel database e non associabile ad una sessione. IdSessione "+idSessione);
+            log.warn("Errore in eliminaUtenteAttivo. UtenteVod non trovato nel database e non associabile ad una sessione. IdSessione "+idSessione);
         }
         return null;
     }
