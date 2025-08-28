@@ -12,4 +12,7 @@ import lombok.Setter;
 public class CreateOrderResponse {
     private String idOrdine;
 
+    public void setOrderId(String s) {
+        this.idOrdine = s;
+    }
 }

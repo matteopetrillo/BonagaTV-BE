@@ -46,4 +46,5 @@ public class Evento {
     @OneToOne(mappedBy = "evento", orphanRemoval = true)
     private CostoEvento costoEvento;
 
+
 }

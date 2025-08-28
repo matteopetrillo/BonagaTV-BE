@@ -130,4 +130,19 @@ public class CanaleService {
     public Canale getSpecialEventChannel() {
         return canaleRepository.getCanalePagamento();
     }
+
+    public List<CanaleDto> getAllFreeChannels() {
+        List<CanaleDto> canaliDto = new ArrayList<>();
+        try {
+            List<Canale> canaliGratuiti = canaleRepository.getCanaliGratuiti();
+            for (Canale c : canaliGratuiti) {
+                CanaleDto dto = Mappers.getMapper(CanaleMapper.class).toDto(c);
+                canaliDto.add(dto);
+            }
+        } catch (Exception e) {
+            log.error("Errore nel metodo getAllFreeChannels "+e.getMessage());
+            e.printStackTrace();
+        }
+        return canaliDto;
+    }
 }

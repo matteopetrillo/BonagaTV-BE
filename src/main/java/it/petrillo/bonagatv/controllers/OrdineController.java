@@ -22,7 +22,8 @@ public class OrdineController {
     @PostMapping("/crea-ordine")
     public ResponseEntity<CreateOrderResponse> creaOrdine(@RequestParam Long id) {
         try {
-            CreateOrderResponse response = new CreateOrderResponse(ordineService.creaOrdine(id));
+            CreateOrderResponse response = new CreateOrderResponse();
+            response.setOrderId(ordineService.creaOrdine(id));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
