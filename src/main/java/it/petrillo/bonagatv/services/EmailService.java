@@ -19,32 +19,17 @@ import javax.mail.internet.MimeMessage;
 public class EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;
-    @Value("${spring.mail.username}")
-    private String EMAIL_USER;
+    private ResendEmailService resendEmailService;
+
 
     @Async
     public void sendEmail(String userEmail, String psw, String nomeEvento, String lang) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = new MimeMessageHelper(message,"UTF-8");
-            messageHelper.setFrom(EMAIL_USER);
-            messageHelper.setTo(userEmail);
-            messageHelper.setSubject("Your "+nomeEvento+" streaming credentials");
-            String htmlMessage;
-            if (lang.equals("it"))
-                htmlMessage = getItaEmailText(userEmail, psw);
-            else
-                htmlMessage = getEngEmailText(userEmail, psw);
-            messageHelper.setText(htmlMessage, true);
-            mailSender.send(message);
+        String subject = "Your " + nomeEvento + " streaming credentials";
+        String htmlMessage = lang.equals("it")
+                ? getItaEmailText(userEmail, psw)
+                : getEngEmailText(userEmail, psw);
 
-        } catch (Exception e) {
-            log.error("Errore nell'invio della mail");
-            e.printStackTrace();
-        }
-
-
+        resendEmailService.sendEmail(userEmail, subject, htmlMessage);
     }
 
     private String getEngEmailText(String user, String psw) {
