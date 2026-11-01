@@ -34,8 +34,8 @@ public class CanaleController {
     }
 
     @GetMapping("/getSpecial")
-    public ResponseEntity<Canale> getSpecialEventChannel() {
-        Canale canale = canaleService.getSpecialEventChannel();
+    public ResponseEntity<CanaleDto> getSpecialEventChannel() {
+        CanaleDto canale = canaleService.getSpecialEventChannel();
         return ResponseEntity.ok(canale);
     }
 

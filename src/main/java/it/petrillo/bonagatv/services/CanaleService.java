@@ -78,6 +78,7 @@ public class CanaleService {
                 specialEventDto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
                 specialEventDto.setStreamingSrc(null);
                 specialEventDto.setCosto(Double.valueOf(infoNextEvento.getOrDefault("costo",null)));
+                specialEventDto.setLinkRisultati(infoNextEvento.get("linkRisultati"));
             }
 
         } catch (Exception e) {
@@ -119,6 +120,8 @@ public class CanaleService {
                 nextEvento.put("idEvento", String.valueOf(e.getId()));
                 if (e.getCostoEvento() != null)
                     nextEvento.put("costo", String.valueOf(e.getCostoEvento().getImporto()));
+                if (e.getLinkRisultati() != null)
+                    nextEvento.put("linkRisultati", e.getLinkRisultati());
                 break;
             }
         }
@@ -127,8 +130,19 @@ public class CanaleService {
     }
 
 
-    public Canale getSpecialEventChannel() {
-        return canaleRepository.getCanalePagamento();
+    public CanaleDto getSpecialEventChannel() {
+        Canale specialEvent = canaleRepository.getCanalePagamento();
+        CanaleDto dto = Mappers.getMapper(CanaleMapper.class).toDto(specialEvent);
+
+        HashMap<String, String> infoNextEvento = getWeekEvents(specialEvent.getEventi(), ChannelType.PAGAMENTO);
+        if (infoNextEvento.containsKey("idEvento")) {
+            dto.setNomeEvento(infoNextEvento.get("nomeEvento"));
+            dto.setLogoEventoSrc(infoNextEvento.get("logoEvento"));
+            dto.setIdEvento(Long.valueOf(infoNextEvento.get("idEvento")));
+            dto.setLinkRisultati(infoNextEvento.get("linkRisultati"));
+        }
+
+        return dto;
     }
 
     public List<CanaleDto> getAllFreeChannels() {

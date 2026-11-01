@@ -20,6 +20,7 @@ public class EventoDto {
     private Long idCanale;
     private String nomeCanale;
     private String logoEvento;
+    private String linkRisultati;
 
     // Private constructor to enforce the use of the builder
     private EventoDto(Builder builder) {
@@ -30,6 +31,7 @@ public class EventoDto {
         this.idCanale = builder.idCanale;
         this.nomeCanale = builder.nomeCanale;
         this.logoEvento = builder.logoEvento;
+        this.linkRisultati = builder.linkRisultati;
     }
 
     // Static inner Builder class
@@ -41,6 +43,7 @@ public class EventoDto {
         private Long idCanale;
         private String nomeCanale;
         private String logoEvento;
+        private String linkRisultati;
 
         public Builder id(Long id) {
             this.id = id;
@@ -74,6 +77,11 @@ public class EventoDto {
 
         public Builder logoEvento(String logoEvento) {
             this.logoEvento = logoEvento;
+            return this;
+        }
+
+        public Builder linkRisultati(String linkRisultati) {
+            this.linkRisultati = linkRisultati;
             return this;
         }
 

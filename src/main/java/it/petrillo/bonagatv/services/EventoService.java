@@ -36,6 +36,7 @@ public class EventoService {
                 .idCanale(e.getCanale().getId())
                 .nomeCanale(e.getCanale().getAssociazione().getAbbreviazione())
                 .logoEvento(e.getLogoEvento())
+                .linkRisultati(e.getLinkRisultati())
                 .build()).toList();
     }
 
@@ -49,6 +50,7 @@ public class EventoService {
         evento.setDataInizio(eventoDto.getDataInizio());
         evento.setDataFine(eventoDto.getDataFine());
         evento.setLogoEvento(eventoDto.getLogoEvento());
+        evento.setLinkRisultati(eventoDto.getLinkRisultati());
         Canale canale = canaleRepository.findById(eventoDto.getIdCanale()).orElseThrow(() -> new RuntimeException("Canale not found"));
         evento.setCanale(canale);
         Evento savedEvento = eventoRepository.save(evento);

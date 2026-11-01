@@ -20,5 +20,6 @@ public class CanaleDto {
     private String logoEventoSrc;
     private String logoCanale;
     private Double costo;
+    private String linkRisultati;
 
 }

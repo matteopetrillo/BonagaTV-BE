@@ -38,6 +38,9 @@ public class Evento {
     @Column(name = "LOGO_EVENTO_SRC", length = 4000)
     private String logoEvento;
 
+    @Column(name = "LINK_RISULTATI", length = 2000)
+    private String linkRisultati;
+
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_CANALE", nullable = false)
